@@ -125,8 +125,10 @@ build_physeq_object <- function(fotu,fmap,ftax){
 }
 
 file_tax = 'data/tax_table_all_80.csv'
-physeq_orig = build_physeq_object('data/otu_table_all_80.csv','data/metadata_table_all_80.csv',file_tax)
-physeq_rec = build_physeq_object('otus_predicted_biome.tsv','data/metadata_table_all_80.csv',file_tax)
+#physeq_orig = build_physeq_object('data/otu_table_all_80.csv','data/metadata_table_all_80.csv',file_tax)
+physeq_orig = build_physeq_object('otus_original_test.tsv','data/metadata_table_all_80.csv',file_tax)
+#physeq_rec = build_physeq_object('otus_predicted_biome.tsv','data/metadata_table_all_80.csv',file_tax)
+physeq_rec = build_physeq_object('otus_predicted_domain.tsv','data/metadata_table_all_80.csv',file_tax)
 
 # Testing with a subset of 4500 samples
 physeq_orig_subset=subset_samples(physeq_orig,Maize_Line=='Popcorn')
@@ -136,3 +138,8 @@ physeq_rec_subset=subset_samples(physeq_rec,Maize_Line=='Popcorn')
 #plot example
 
 plot_taxa_subset(physeq_orig_subset, physeq_rec_subset,  'Maize_Line',  'Popcorn', 'Phylum')
+
+
+#plot_bar(physeq_orig_subset, fill="Phylum")
+#plot_bar(physeq_rec_subset, fill="Phylum")
+
