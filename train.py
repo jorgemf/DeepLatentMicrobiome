@@ -75,7 +75,8 @@ def train(model_fn,
         m_train, m_test = data_microbioma[train_index], data_microbioma[test_index]
         d_train, d_test = data_domain[train_index], data_domain[test_index]
         z_train, z_test = data_zeros_latent[train_index], data_zeros_latent[test_index]
-        model, encoder_bioma, encoder_domain, decoder_bioma = model_fn()
+        all_models = model_fn()
+        model, encoder_bioma, encoder_domain, decoder_bioma = all_models
 
         metrics_prefix = None
         if encoder_bioma is not None and encoder_domain is not None:
@@ -124,7 +125,7 @@ def train(model_fn,
         del x_test
         del y_test
         results.append(r)
-        models.append(model)
+        models.append(all_models)
     return results, models
 
 
