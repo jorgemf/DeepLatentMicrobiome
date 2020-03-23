@@ -125,8 +125,6 @@ class JensenShannonDivergence(metrics.Mean):
         return tf.reduce_sum(r, axis=-1)
 
     def update_state(self, y_true, y_pred, sample_weight=None):
-        y_p = y_pred
-        y_t = y_true
         if self.y_true_transformer is not None:
             y_true = self.y_true_transformer(y_true)
         if self.y_pred_transformer is not None:

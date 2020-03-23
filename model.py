@@ -1,8 +1,7 @@
 from layers import *
-from metris import *
 import tensorflow as tf
 import tensorflow.keras as keras
-from tensorflow.keras import layers, losses, metrics, optimizers
+from tensorflow.keras import layers
 
 
 def autoencoder(bioma_shape=717,

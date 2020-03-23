@@ -71,6 +71,14 @@ def print_results(results, show_results=True):
         if k_val in sequences:
             plt.legend(['train', 'validation'])
         plt.show()
+
+    md_text  = "| Metric           | Mean    | Min     | Max     |\n"
+    md_text += "|:-----------------|--------:|--------:|--------:|\n"
+    for k in keys:
+        mean_seq, min_seq, max_seq = sequences[k]
+        md_text += "| {} | {} | {} | {} |\n".format(k, mean_seq[min_loss_i],
+                                                    min_seq[min_loss_i],
+                                                    max_seq[min_loss_i])
     return best_iteration
 
 

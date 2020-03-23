@@ -24,7 +24,7 @@ def read_data(random_state=42):
     data_domain = df[domain.columns].to_numpy(dtype=np.float32)
     data_microbioma_train, data_microbioma_test, data_domain_train, data_domain_test = \
         train_test_split(data_microbioma, data_domain, test_size=0.1, random_state=random_state)
-    return data_microbioma_train, data_microbioma_test, data_domain_train, data_domain_test
+    return data_microbioma_train, data_microbioma_test, data_domain_train, data_domain_test, otu.columns, domain.columns
 
 
 class DatasetSequence(keras.utils.Sequence):

@@ -1,4 +1,10 @@
-import gc
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import warnings
+
+warnings.filterwarnings('ignore')
+
 from metric import *
 from utils import ExpDecayScheluder
 from layers import *
@@ -12,7 +18,8 @@ from IPython.display import Markdown, display
 from tqdm.keras import TqdmCallback
 from data import read_data
 
-data_microbioma_train, data_microbioma_test, data_domain_train, data_domain_test = read_data()
+data_microbioma_train, data_microbioma_test, data_domain_train, data_domain_test, \
+otu_columns, domain_columns = read_data()
 
 
 def compile_train(model, encoder_bioma=None, encoder_domain=None,
@@ -208,7 +215,7 @@ def perform_experiment(cv_folds, epochs, batch_size, learning_rate, optimizer,
                                      ["b"])
     in_transform_name = input_transform.__class__.__name__ if input_transform else "none"
     out_transform_name = output_transform.__class__.__name__ if output_transform else "none"
-    lr_scheduler_text = learning_rate_scheduler[1] if learning_rate_scheduler is not None else ""
+    lr_scheduler_text = learning_rate_scheduler[1] if learning_rate_scheduler is not None else "none"
     lr_text = learning_rate if learning_rate_scheduler is not None else "constant = {}".format(
         learning_rate)
     learning_rate_scheduler = learning_rate_scheduler[
@@ -286,8 +293,3 @@ def perform_experiment(cv_folds, epochs, batch_size, learning_rate, optimizer,
         display(Markdown("*************"))
 
     return experiment_parameters + validation_results, models, results
-
-
-def test_experiment(models, show=True):
-    # TODO
-    pass
