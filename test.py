@@ -17,6 +17,7 @@ def test_experiment(models, input_transform, output_transform, show=True):
     metrics_results = {}
     metrics = get_experiment_metrics(input_transform, output_transform)[1][3:]
     otus_errors = []
+    all_predictions = []
     for cv_models in models:
         _, _, encoder_domain, decoder_bioma = cv_models
         encoded = encoder_domain.predict(data_domain_test)
@@ -27,6 +28,7 @@ def test_experiment(models, input_transform, output_transform, show=True):
             result = m(data_microbioma_test, decoded)
             m.reset_states()
             metrics_results[m.name].append(result.numpy())
+        all_predictions.append(decoded)
         # otus error
         se = tf.math.squared_difference(decoded, data_bioma_test_transformed)
         mse = tf.reduce_mean(se, axis=0)
@@ -59,18 +61,28 @@ def test_experiment(models, input_transform, output_transform, show=True):
 
         display(Markdown(md_text))
 
-    return metrics_results
+    final_predictions = np.mean(all_predictions,axis=0)
+    return metrics_results, final_predictions
+
+
+def save_predictions(predictions, filename):
+    np.savetxt(filename, predictions, delimiter=',', fmt='% 03.6f')
 
 
 def perform_test_experiment(cv_folds, epochs, batch_size, learning_rate, optimizer,
                            learning_rate_scheduler, input_transform, output_transform,
                            reconstruction_loss, latent_space, layers,
-                           activation, activation_latent, show_results=False, device='/CPU:0'):
+                           activation, activation_latent, show_results=False, device='/CPU:0',
+                            filename_predictions=None):
     summary, models, results = perform_experiment(cv_folds, epochs, batch_size, learning_rate,
                                                   optimizer, learning_rate_scheduler,
                                                   input_transform, output_transform,
                                                   reconstruction_loss, latent_space, layers,
                                                   activation, activation_latent,
                                                   show_results, device)
-    metrics_test = test_experiment(models, input_transform=CenterLogRatio, output_transform=None)
+    metrics_test, final_predictions = test_experiment(models,
+                                                      input_transform=input_transform,
+                                                      output_transform=output_transform)
+    if filename_predictions is not None:
+        save_predictions(final_predictions, filename_predictions)
     return models, metrics_test

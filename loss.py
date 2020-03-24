@@ -1,4 +1,5 @@
 from tensorflow.keras import losses
+import tensorflow as tf
 
 
 class LossMeanSquaredErrorWrapper(losses.MeanSquaredError):
