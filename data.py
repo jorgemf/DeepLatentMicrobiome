@@ -5,11 +5,13 @@ import tensorflow.keras as keras
 from sklearn.model_selection import train_test_split
 
 
-def read_data(random_state=42):
-    otu = pd.read_csv('data/otu_table_all_80.csv', index_col=0, header=None, sep='\t').T
+def read_data(random_state=42,
+              otu_filename='data/otu_table_all_80.csv',
+              metadata_filename='data/metadata_table_all_80.csv'):
+    otu = pd.read_csv(otu_filename, index_col=0, header=None, sep='\t').T
     otu = otu.set_index('otuids')
     otu = otu.astype('int32')
-    metadata = pd.read_csv('data/metadata_table_all_80.csv', sep='\t')
+    metadata = pd.read_csv(metadata_filename, sep='\t')
     metadata = metadata.set_index('X.SampleID')
     domain = metadata[['age',
                        'Temperature',
