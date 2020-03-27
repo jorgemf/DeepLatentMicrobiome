@@ -55,6 +55,59 @@ def compile_train(model, encoder_bioma=None, encoder_domain=None,
         raise Exception('Not domain nor bioma models')
 
 
+def train_kfold(model_fn, m_train, d_train, z_train, m_test, d_test, z_test,
+                batch_size, epochs, train_callbacks):
+    all_models = model_fn()
+    model, encoder_bioma, encoder_domain, decoder_bioma = all_models
+    metrics_prefix = None
+    if encoder_bioma is not None and encoder_domain is not None:
+        x_train = (m_train, d_train)
+        y_train = (m_train, m_train, z_train)
+        x_test = (m_test, d_test)
+        y_test = (m_test, m_test, z_test)
+    elif encoder_bioma is not None:
+        x_train = m_train
+        y_train = m_train
+        x_test = m_test
+        y_test = m_test
+        metrics_prefix = 'bioma'
+    elif encoder_domain is not None:
+        x_train = d_train
+        y_train = m_train
+        x_test = d_test
+        y_test = m_test
+        metrics_prefix = 'domain'
+
+    train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).shuffle(5000).batch(
+        batch_size)
+    train_dataset = train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
+    val_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(batch_size)
+    val_dataset = val_dataset.prefetch(tf.data.experimental.AUTOTUNE)
+    r = model.fit(train_dataset,
+                  epochs=epochs,
+                  validation_data=val_dataset,
+                  callbacks=train_callbacks,
+                  verbose=0)
+    if metrics_prefix is not None:
+        old_keys = r.history
+        r.history = {}
+        for k, v in old_keys.items():
+            if k == 'loss' or k == 'val_loss':
+                new_key = k
+            elif k.startswith('val_'):
+                new_key = 'val_{}_{}'.format(metrics_prefix, k[4:])
+            else:
+                new_key = '{}_{}'.format(metrics_prefix, k)
+            r.history[new_key] = v
+    del val_dataset
+    del train_dataset
+    del x_train
+    del y_train
+    del x_test
+    del y_test
+    return r, all_models
+
+
 def train(model_fn,
           data_microbioma,
           data_domain,
@@ -66,7 +119,6 @@ def train(model_fn,
           random_seed=347,
           verbose=0):
     data_zeros_latent = np.zeros((data_domain.shape[0], latent_space), dtype=data_domain.dtype)
-    kf = KFold(n_splits=folds, random_state=random_seed, shuffle=True)
     results = []
     models = []
     train_callbacks = [
@@ -76,63 +128,28 @@ def train(model_fn,
     if learning_rate_scheduler is not None:
         train_callbacks += [learning_rate_scheduler.make()]
 
-    tf.random.set_seed(random_seed)
-
-    for train_index, test_index in kf.split(data_microbioma):
-        m_train, m_test = data_microbioma[train_index], data_microbioma[test_index]
-        d_train, d_test = data_domain[train_index], data_domain[test_index]
-        z_train, z_test = data_zeros_latent[train_index], data_zeros_latent[test_index]
-        all_models = model_fn()
-        model, encoder_bioma, encoder_domain, decoder_bioma = all_models
-
-        metrics_prefix = None
-        if encoder_bioma is not None and encoder_domain is not None:
-            x_train = (m_train, d_train)
-            y_train = (m_train, m_train, z_train)
-            x_test = (m_test, d_test)
-            y_test = (m_test, m_test, z_test)
-        elif encoder_bioma is not None:
-            x_train = m_train
-            y_train = m_train
-            x_test = m_test
-            y_test = m_test
-            metrics_prefix = 'bioma'
-        elif encoder_domain is not None:
-            x_train = d_train
-            y_train = m_train
-            x_test = d_test
-            y_test = m_test
-            metrics_prefix = 'domain'
-
-        train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).shuffle(5000).batch(
-            batch_size)
-        train_dataset = train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
-        val_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(batch_size)
-        val_dataset = val_dataset.prefetch(tf.data.experimental.AUTOTUNE)
-        r = model.fit(train_dataset,
-                      epochs=epochs,
-                      validation_data=val_dataset,
-                      callbacks=train_callbacks,
-                      verbose=0)
-        if metrics_prefix is not None:
-            old_keys = r.history
-            r.history = {}
-            for k, v in old_keys.items():
-                if k == 'loss' or k == 'val_loss':
-                    new_key = k
-                elif k.startswith('val_'):
-                    new_key = 'val_{}_{}'.format(metrics_prefix, k[4:])
-                else:
-                    new_key = '{}_{}'.format(metrics_prefix, k)
-                r.history[new_key] = v
-        del val_dataset
-        del train_dataset
-        del x_train
-        del y_train
-        del x_test
-        del y_test
+    if folds <= 1:
+        m_train, m_test = data_microbioma, data_microbioma
+        d_train, d_test = data_domain, data_domain
+        z_train, z_test = data_zeros_latent, data_zeros_latent
+        tf.random.set_seed(random_seed)
+        r, m = train_kfold(model_fn, m_train, d_train, z_train, m_test, d_test, z_test,
+                           batch_size, epochs, train_callbacks)
         results.append(r)
-        models.append(all_models)
+        models.append(m)
+
+    else:
+        kf = KFold(n_splits=folds, random_state=random_seed, shuffle=True)
+        tf.random.set_seed(random_seed)
+
+        for train_index, test_index in kf.split(data_microbioma):
+            m_train, m_test = data_microbioma[train_index], data_microbioma[test_index]
+            d_train, d_test = data_domain[train_index], data_domain[test_index]
+            z_train, z_test = data_zeros_latent[train_index], data_zeros_latent[test_index]
+            r, m = train_kfold(model_fn, m_train, d_train, z_train, m_test, d_test, z_test,
+                               batch_size, epochs, train_callbacks)
+            results.append(r)
+            models.append(m)
     return results, models
 
 
@@ -215,7 +232,8 @@ def perform_experiment(cv_folds, epochs, batch_size, learning_rate, optimizer,
                                      ["b"])
     in_transform_name = input_transform.__class__.__name__ if input_transform else "none"
     out_transform_name = output_transform.__class__.__name__ if output_transform else "none"
-    lr_scheduler_text = learning_rate_scheduler[1] if learning_rate_scheduler is not None else "none"
+    lr_scheduler_text = learning_rate_scheduler[
+        1] if learning_rate_scheduler is not None else "none"
     lr_text = learning_rate if learning_rate_scheduler is not None else "constant = {}".format(
         learning_rate)
     learning_rate_scheduler = learning_rate_scheduler[
