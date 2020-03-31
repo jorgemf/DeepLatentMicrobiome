@@ -109,7 +109,7 @@ def train_kfold(model_fn, m_train, d_train, z_train, m_test, d_test, z_test,
     return r, all_models
 
 
-def train(model_fn,
+def train_2(model_fn,
           data_microbioma,
           data_domain,
           latent_space=10,
@@ -119,7 +119,7 @@ def train(model_fn,
           learning_rate_scheduler=ExpDecayScheluder(),
           random_seed=347,
           verbose=0):
-    data_zeros_latent = np.zeros((data_domain.shape[0], latent_space), dtype=data_domain.dtype)
+    data_zeros_latent = np.zeros((data_microbioma.shape[0], latent_space), dtype=data_microbioma.dtype)
     results = []
     models = []
     train_callbacks = [
@@ -228,11 +228,14 @@ def perform_experiment_2(cv_folds, epochs, batch_size, learning_rate, optimizer,
                                     [str(latent_space)] +
                                     [str(l) for l in reversed(layers)] +
                                     ["b"])
-    domain_autoencoder = " -> ".join(["d"] +
+    if data_domain_train is not None:
+        domain_autoencoder = " -> ".join(["d"] +
                                      [str(l) for l in domain_layers] +
                                      [str(latent_space)] +
                                      [str(l) for l in reversed(layers)] +
                                      ["b"])
+    else:
+        domain_autoencoder = " "
     in_transform_name = input_transform.__class__.__name__ if input_transform else "none"
     out_transform_name = output_transform.__class__.__name__ if output_transform else "none"
     lr_scheduler_text = learning_rate_scheduler[
@@ -270,9 +273,12 @@ def perform_experiment_2(cv_folds, epochs, batch_size, learning_rate, optimizer,
         display(Markdown(md_text))
 
     def create_model(print_data=False):
-
+        if data_domain_train is not None:
+            domain_shape=data_domain_train.shape[1]
+        else:
+            domain_shape=None
         models = autoencoder(bioma_shape=717,
-                             domain_shape=data_domain_train.shape[1],
+                             domain_shape=domain_shape,
                              output_shape=717,
                              latent_space=latent_space,
                              bioma_layers=layers,
@@ -299,7 +305,7 @@ def perform_experiment_2(cv_folds, epochs, batch_size, learning_rate, optimizer,
     create_model(print_data=False)
 
     with tf.device(device):
-        results, models = train(create_model,
+        results, models = train_2(create_model,
                                 data_microbioma_train,
                                 data_domain_train,
                                 latent_space=latent_space,
@@ -314,3 +320,5 @@ def perform_experiment_2(cv_folds, epochs, batch_size, learning_rate, optimizer,
         display(Markdown("*************"))
 
     return experiment_parameters + validation_results, models, results
+
+
