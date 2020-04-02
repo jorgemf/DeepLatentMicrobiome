@@ -84,6 +84,28 @@ def print_results(results, show_results=True):
 
     return best_iteration
 
+def print_results_noEnsemble(results, show_results=True):
+    sequences = {}
+    for k in results.history.keys():
+        arrays = np.array(results.history[k])
+        sequences[k] = [arrays.mean(), arrays.min(), arrays.max()]
+    # best loss
+    min_loss_i = np.argmin(np.array(results.history['val_loss']))
+    best_iteration = [('best_lost_epoch', min_loss_i)]
+
+    display(Markdown("<p>Best iteration: <b>{}</b></p>".format(min_loss_i)))
+    keys = [k for k in results.history.keys() if not k.startswith('val_')]
+    x = results.epoch
+
+    md_text = "| Metric           | Mean    | Min     | Max     |\n"
+    md_text += "|:-----------------|--------:|--------:|--------:|\n"
+    for k in keys:
+        mean_seq, min_seq, max_seq = sequences[k]
+        md_text += "| {} | {} | {} | {} |\n".format(k, mean_seq,
+                                                    min_seq,
+                                                    max_seq)
+    display(Markdown(md_text))
+
 
 def save_summary(all_metrics, filename='results.csv', show=True):
     keys_set = set()
