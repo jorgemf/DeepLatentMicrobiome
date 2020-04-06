@@ -26,7 +26,7 @@ plot_taxa_subset = function (data_or, data_tr, data_pred, variable, value, tax_r
   #function to plot comparative barplots between original (middle row), reconstructed by autoencoder (top row) and predicted microbial composition by environmental features (bottom row)
   #color according to tax_rank
   #samples are shown individually and only the ones that belong to a specific value of a variable are plotted
-  
+    
   if (tax_rank != "Species") {
     #group data according to tax rank (as a parameter)
     data_or.rank <- data_or %>% 
@@ -41,6 +41,18 @@ plot_taxa_subset = function (data_or, data_tr, data_pred, variable, value, tax_r
     data_pred.rank=data_pred
   }
   
+  # Subset samples if random
+  if(variable == 'random'){
+    subset_indexes=sample.int(nsamples(data_or.rank),value)
+    subset_names=sample_names(data_or.rank)[subset_indexes]
+    dt=data_or.rank
+    data_or.rank <- prune_samples(sample_names(dt) %in% subset_names, dt)
+    dt=data_tr.rank
+    data_tr.rank <- prune_samples(sample_names(dt) %in% subset_names, dt)
+    dt=data_pred.rank
+    data_pred.rank <- prune_samples(sample_names(dt) %in% subset_names, dt)
+  }
+  
   data_or.rank_df=data_or.rank %>%
     psmelt()
   data_tr.rank_df=data_tr.rank %>%
@@ -51,9 +63,15 @@ plot_taxa_subset = function (data_or, data_tr, data_pred, variable, value, tax_r
   samples_id=sort(unique(data_or.rank_df$Sample))
   
   #select subset of samples
-  samples_subset_or=subset(data_or.rank_df, data_or.rank_df[[variable]] == value)
-  samples_subset_tr=subset(data_tr.rank_df, data_tr.rank_df[[variable]] == value)
-  samples_subset_pred=subset(data_pred.rank_df, data_pred.rank_df[[variable]] == value)
+  if(variable != 'random'){
+    samples_subset_or=subset(data_or.rank_df, data_or.rank_df[[variable]] == value)
+    samples_subset_tr=subset(data_tr.rank_df, data_tr.rank_df[[variable]] == value)
+    samples_subset_pred=subset(data_pred.rank_df, data_pred.rank_df[[variable]] == value)
+  }else{
+    samples_subset_or=data_or.rank_df
+    samples_subset_tr=data_tr.rank_df
+    samples_subset_pred=data_pred.rank_df
+  }
   
   #plot
   # reconstructed 
@@ -120,7 +138,7 @@ build_physeq_object <- function(fotu,fmap,ftax){
   return(phyObj) 
 }
 
-file_tax = 'data/tax_table_all_80.csv'
+file_tax = 'data/tax_table_all_80_cleanNames.csv'
 file_meta = 'data/metadata_table_all_80.csv'
 # Train samples
 #physeq_orig = build_physeq_object('data/otu_table_all_80.csv',file_meta,file_tax)
@@ -131,13 +149,19 @@ physeq_rec = build_physeq_object('otus_reconstAEfromBiome.tsv',file_meta,file_ta
 physeq_pred = build_physeq_object('otus_predFromDomain.tsv',file_meta,file_tax)
 
 #plot example
-#plot_taxa_subset(physeq_orig, physeq_rec,  'Maize_Line',  'Popcorn', 'Phylum')
+plot_taxa_subset(physeq_orig, physeq_rec,  'Maize_Line',  'Popcorn', 'Phylum')
 for (var in c('INBREDS','Maize_Line')){
   for (value in levels(get_variable(physeq_orig,var))){
     plot_taxa_subset(physeq_orig, physeq_rec, physeq_pred, var, value, 'Phylum')
   }
 }
 
+#####
+# HEREE:
+#Random subset
+plot_taxa_subset(physeq_orig, physeq_rec, physeq_pred, 'random', 10, 'Phylum')
+
+########
 
 #'age','Temperature','Precipitation3Days'
 
@@ -152,3 +176,63 @@ for (var in c('INBREDS','Maize_Line')){
 #plot_bar(physeq_orig_subset, fill="Phylum")
 #plot_bar(physeq_rec_subset, fill="Phylum")
 
+
+#####################################################
+# To identify colors!!
+
+# library(plotly)
+# 
+# plot_taxa_subset_plotly <- function (data_or, data_tr, data_pred, variable, value, tax_rank){
+#   #function to plot comparative barplots between original (middle row), reconstructed by autoencoder (top row) and predicted microbial composition by environmental features (bottom row)
+#   #color according to tax_rank
+#   #samples are shown individually and only the ones that belong to a specific value of a variable are plotted
+#   
+#   if (tax_rank != "Species") {
+#     #group data according to tax rank (as a parameter)
+#     data_or.rank <- data_or %>% 
+#       tax_glom(taxrank = tax_rank) 
+#     data_tr.rank <- data_tr %>% 
+#       tax_glom(taxrank = tax_rank) 
+#     data_pred.rank <- data_pred %>% 
+#       tax_glom(taxrank = tax_rank)
+#   }else{
+#     data_or.rank=data_or 
+#     data_tr.rank=data_tr 
+#     data_pred.rank=data_pred
+#   }
+#   
+#   data_or.rank_df=data_or.rank %>%
+#     psmelt()
+#   data_tr.rank_df=data_tr.rank %>%
+#     psmelt()
+#   data_pred.rank_df=data_pred.rank %>%
+#     psmelt()
+#   
+#   samples_id=sort(unique(data_or.rank_df$Sample))
+#   
+#   #select subset of samples
+#   samples_subset_or=subset(data_or.rank_df, data_or.rank_df[[variable]] == value)
+#   samples_subset_tr=subset(data_tr.rank_df, data_tr.rank_df[[variable]] == value)
+#   samples_subset_pred=subset(data_pred.rank_df, data_pred.rank_df[[variable]] == value)
+#   
+#   #plot
+#   # reconstructed 
+#   p1 <- ggplot(samples_subset_tr, aes(x = samples_subset_tr$Sample, y = Abundance, fill = samples_subset_tr[,tax_rank]))+
+#     geom_bar(aes(), stat="identity", position="fill") + 
+#     guides(fill = guide_legend(title=tax_rank)) +
+#     scale_fill_hue(c=80, l=70) +
+#     ylab("") +
+#     #xlab("Samples")+
+#     ggtitle("Reconstructed") +
+#     theme(axis.title.x=element_blank(),
+#           axis.text.x=element_blank(),
+#           axis.ticks.x=element_blank())
+#   
+#   ggplotly(p1)
+# }
+# 
+# fig <- plot_taxa_subset_plotly(physeq_orig, physeq_rec, physeq_pred, 'INBREDS', 'CML103', 'Phylum')
+# 
+# fig
+# 
+# # Pink: Verrucomicrobia
