@@ -67,6 +67,64 @@ def test_model(models, input_transform, output_transform, bioma_transfer_test, d
     return final_predictions
 
 
+
+def test_model_cv_predictions(models_cv, input_transform, output_transform, data_microbioma, data_domain):
+    data_bioma_test_transformed = Percentage()(data_microbioma)
+    if input_transform is not None:
+        input_transform = input_transform()
+    if output_transform is not None:
+        output_transform = output_transform()
+    metrics_results = {}
+    metrics = get_experiment_metrics(input_transform, output_transform)[0][3:]
+    otus_errors = []
+    all_predictions = []
+    for model in models_cv:
+        predictions_latent = model[2].predict(data_domain)
+        predictions = model[3].predict(predictions_latent)
+        all_predictions.append(predictions)
+    final_decoded = np.mean(all_predictions,axis=0)
+    
+    predictions = tf.nn.softmax(final_decoded)
+    
+    for m in metrics:
+        if m.name not in metrics_results:
+            metrics_results[m.name] = []
+        result = m(data_microbioma, final_decoded)
+        metrics_results[m.name] =result.numpy()
+    # otus error
+    se = tf.math.squared_difference(final_decoded, data_bioma_test_transformed)
+    mse_otus = tf.reduce_mean(se, axis=0)
+    mse_otus_keys = sorted(zip(mse_otus.numpy(), otu_columns), key=lambda x: x[0])
+    for k, v in list(metrics_results.items()):
+        v = np.asarray(v)
+        metrics_results[k] = (v.mean(), v.min(), v.max())
+    
+    md_text = "## Test results \n"
+    md_text += "| Metric           | Mean    | Min     | Max     |\n"
+    md_text += "|:-----------------|--------:|--------:|--------:|\n"
+    for k, v in metrics_results.items():
+        md_text += "| {} | {} | {} | {} |\n".format(k, v[0], v[1], v[2])
+
+
+    display(Markdown(md_text))
+
+#     md_text ="### Best Otus\n"
+#     md_text += "| OTU | mse |\n"
+#     md_text += "|:----|----:|\n"
+#     for v, k in mse_otus_keys[:10]:
+#         md_text += "| {} | {} |\n".format(k, v)
+#     md_text += "\n\n"
+#     md_text +="### Worst Otus\n"
+#     md_text += "| OTU | mse |\n"
+#     md_text += "|:----|----:|\n"
+#     for v, k in reversed(mse_otus_keys[-10:]):
+#         md_text += "| {} | {} |\n".format(k, v)
+#
+#    display(Markdown(md_text))
+    
+    return predictions
+
+
 def train_tl_noEnsemble(model_fn,
           data_latent_train,
           data_latent_val,
