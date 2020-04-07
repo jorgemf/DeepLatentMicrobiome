@@ -27,6 +27,14 @@ class CenterLogRatio(layers.Layer):
     def compute_output_shape(self, input_shape):
         return input_shape
 
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'calculate_percentage': self.calculate_percentage,
+            'epsilon': self.epsilon,
+        })
+        return config
+
 
 class Percentage(layers.Layer):
 
@@ -48,6 +56,13 @@ class Percentage(layers.Layer):
 
     def compute_output_shape(self, input_shape):
         return input_shape
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'epsilon': self.epsilon,
+        })
+        return config
 
 
 class Identity(layers.Layer):
