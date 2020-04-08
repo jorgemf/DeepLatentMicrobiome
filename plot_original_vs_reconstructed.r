@@ -5,6 +5,7 @@ library(plyr)
 library(dplyr)
 library(gridExtra)
 library(grid)
+library(scales)
 `%not_in%` <- purrr::negate(`%in%`)
 
 # pre-built function (public online) to use only one color legend in a composed plot
@@ -157,7 +158,6 @@ for (var in c('INBREDS','Maize_Line')){
 }
 
 #####
-# HEREE:
 #Random subset
 plot_taxa_subset(physeq_orig, physeq_rec, physeq_pred, 'random', 10, 'Phylum')
 

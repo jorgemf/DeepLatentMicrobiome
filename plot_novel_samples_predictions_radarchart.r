@@ -1,8 +1,10 @@
 library(fmsb)
 library(phyloseq)
+library(extrafont)
 
 ####
 # Taken from: https://stackoverflow.com/questions/54185029/change-labels-colors-in-r-radarchart
+# Adapted to avoid overlap in top and bottom of peripherical labels
 radarchart2 <- function (df, axistype = 0, seg = 4, pty = 16, pcol = 1:8, plty = 1:6, 
                          plwd = 1, pdensity = NULL, pangle = 45, pfcol = NA, cglty = 3, 
                          cglwd = 1, cglcol = "navy", axislabcol = "blue", vlabcol = "black", title = "", 
@@ -66,12 +68,33 @@ radarchart2 <- function (df, axistype = 0, seg = 4, pty = 16, pcol = 1:8, plty =
     else text(xx[1:n], yy[1:n], PAXISLABELS, col = axislabcol, 
               cex = palcex)
   }
+  #
+  #print("theta:")
+  #print(theta)
+  #print("xx:")
+  #print(xx)
+  #print("yy:")
+  #print(yy)
+  #
   VLABELS <- colnames(df)
+  polars1=(abs(yy)==1)
+  polars2=((abs(yy)>=9.8e-01) & (abs(yy)!=1))
+  notPolars=!as.logical(polars1 + polars2)
   if (!is.null(vlabels)) 
     VLABELS <- vlabels
-  if (is.null(vlcex)) 
-    text(xx * 1.2, yy * 1.2, VLABELS, col = vlabcol)
-  else text(xx * 1.2, yy * 1.2, VLABELS, cex = vlcex, col = vlabcol)
+  if (is.null(vlcex)){ # BGJ: 2020.04.07 (inspired by https://stackoverflow.com/questions/43403700/controlling-srt-in-text-to-work-selectively-in-r)
+    text(1.2 * xx[polars1], 1.2 * (yy[polars1]+(yy[polars1]*0.05)), VLABELS[polars1], col = vlabcol, font=4, family='Times')
+    if(sum(polars2)>0)
+      text(1.2 * (xx[polars2]+xx[polars2]*0.25), 1.2 * (yy[polars2]+(yy[polars2]*0.02)), VLABELS[polars2], col = vlabcol, font=4, family='Times') # if rotate: ,srt=15
+    text(1.2 * xx[notPolars], 1.2 * yy[notPolars], VLABELS[notPolars], col = vlabcol, font=4, family='Times')
+    # text(xx * 1.2, yy * 1.2, VLABELS, col = vlabcol) # original
+  }else{ #BGJ: 2020.04.07
+    text(1.2 * xx[polars1], 1.2 * (yy[polars1]+(yy[polars1]*0.05)), VLABELS[polars1], cex = vlcex, col = vlabcol, font=4, family='Times')
+    if(sum(polars2)>0)
+      text(1.2 * (xx[polars2]+xx[polars2]*0.25), 1.2 * (yy[polars2]+(yy[polars2]*0.02)), VLABELS[polars2], cex = vlcex, col = vlabcol, font=4, family='Times') # if rotate: ,srt=15
+    text(1.2 * xx[notPolars], 1.2 * yy[notPolars], VLABELS[notPolars], cex = vlcex, col = vlabcol, font=4, family='Times')
+    #text(xx * 1.2, yy * 1.2, VLABELS, cex = vlcex, col = vlabcol)  # original
+  }
   series <- length(df[[1]])
   SX <- series - 2
   if (length(pty) < SX) {
@@ -197,52 +220,112 @@ radarchart2 <- function (df, axistype = 0, seg = 4, pty = 16, pcol = 1:8, plty =
 }
 ####
 
-file_tax = 'data/tax_table_all_80.csv'
-physeq_pred = build_physeq_object('otus_predFromDomain_novelSamples.tsv','data/metadata_novel_samples_only5envFeatures.csv',file_tax)
+# Author: Beatriz Garcia-Jimenez
+build_physeq_object <- function(fotu,fmap,ftax){
+  otumat <- read.table(fotu,sep='\t',row.names=1,header=TRUE,check.names=FALSE)
+  OTU = otu_table(otumat, taxa_are_rows = TRUE)
+  
+  mapmat <- read.table(fmap,sep='\t',row.names=1,header=TRUE)
+  MAP = sample_data(mapmat)
+  
+  taxmat <- read.table(ftax,sep='\t',row.names=1,header=TRUE)
+  colnames(taxmat) = c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+  taxmat=as.matrix(taxmat)
+  TAX = tax_table(taxmat)
+  
+  phyObj = phyloseq(OTU, MAP, TAX) 
+  
+  return(phyObj) 
+}
+###
+
+plot_radarchart_several_taxaLevels <- function(physeq_pred_sub,suffix0){
+  for(tax_rank in c("Phylum","Class")){
+    suffix=paste(suffix0,tax_rank,sep='_')
+    #plot_bar(physeq_pred_sub, fill=tax_rank)
+    physeq_rank <- tax_glom(physeq_pred_sub, taxrank = tax_rank)
+    
+    # Translate taxa ID to taxa understandable name
+    dic_taxa_names=tax_table(physeq_rank)[,tax_rank]
+    for(i in seq(1,length(taxa_names(physeq_rank)))){
+      id=taxa_names(physeq_rank)[i]
+      #taxa=unlist(strsplit(dic_taxa_names[id],'__'))[2]
+      taxa=gsub('bacteria-','bact.',dic_taxa_names[id])
+      #taxa=dic_taxa_names[id]
+      taxa_names(physeq_rank)[i]=taxa
+    }
+    
+    # # Define color scale at Phylum level
+    # colorsPhylum = hue_pal(c=80,l=70)(16)
+    # taxaPhylum = c(sort(unique(tax_table(physeq_rank)[,"Phylum"])))
+    # # HEREEEEEEEEEEEEE
+    # #https://stackoverflow.com/questions/37862979/create-color-palette-function-from-named-list-or-vector
+    # # HEREE: Averiguar como generar esta lista a partir de pares <taxaPhylum,colorsPhylum>
+    # col_universe <- list(Acidobacteria = colorsPhylum[1], etc.)
+    #      #"Actinobacteria"   "Armatimonadetes"  "Bacteroidetes"    "Chloroflexi" "Crenarchaeota"    "Elusimicrobia"    "Fibrobacteres"    "Firmicutes"       "Gemmatimonadetes" "Nitrospirae"      "Planctomycetes"   "Proteobacteria"   "Verrucomicrobia"  "WS3"   
+    # #col_universe <- list(dark_blue = "#034772", med_blue = "#2888BC", light_blue = "#73B7CE", green = "#699D46", orange = "#EA8936", gold = "#F9C347", dark_grey = "#58595B", medium_grey = "#7D7E81",light_grey = "#C1C2C4")
+    # pal1 <- c(tax_table(physeq_rank)[,"Phylum"])
+    # vlabcol_values=c()
+    # vlabcol_values=c(vlabcol_values,unname(col_universe[pal1]))
+
+    #########
+    
+    df=as.data.frame(t(otu_table(physeq_rank)))
+    df=df[, order(names(df))]
+    write.table(df , paste('otus_predFromDomain_novelSamples_withTaxaNames',suffix,'.tsv',sep=''), sep="\t", row.names = TRUE, col.names = NA)
+    
+    # Plot Radar Chart
+    # To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
+    min=0
+    max=round(max(df),2)
+    max_perc=max*100
+    max_axis=(max_perc+(5-(max_perc%%5)))/100 # To avoid rare numbers in graph
+    labels_central_axis=seq(max_axis,0,-(round(max_axis/4,2)))
+    labels_central_axis[5]=round(0,0)
+    data <- rbind(rep(min,length(df)) , rep(max_axis,length(df)) , df)
+
+    colors_v=c(rgb(0.8,0.2,0.5,0.9), rgb(0.2,0.5,0.5,0.9), rgb(0.7,0.5,0.1,0.9))
+    pdf(paste('radarChart_otus_predFromDomain_novelSamples',suffix,'.pdf',sep=''))
+    par(xpd=NA)         # Allow plotting outside the plot region
+    #par(family='Times',font=3,font.main=2,font.axis=1)
+    radarchart2(data,
+               axistype=1,
+               #custom polygon
+               pcol=colors_v,
+               plwd=3, plty=3, pty=19,
+               #custom the grid
+               cglcol="grey88", cglty=1, axislabcol="black",
+               # Reverse axis labeling
+               caxislabels=labels_central_axis,   
+               cglwd=0.8,
+               vlcex=0.9,
+               # custom color labels: radarchart2
+               # TODO: according to higher taxonomic group
+               #vlabcol=c(rep('red',15),rep('blue',15),rep('green',15),rep('purple',15)),
+               title='Relative abundances in different environmental conditions'
+    )
+    legend(x=-1, y=1.48, legend = c('actual','hot and dry','cold and wet'), bty = "n", horiz=TRUE, pch=20 , col=colors_v, cex=1.2, pt.cex=3)
+    dev.off()
+    embed_fonts(paste('radarChart_otus_predFromDomain_novelSamples',suffix,'.pdf',sep=''))
+  } # end-for
+} # end-function
+###
+
+
+
+
+
+file_tax = 'data/tax_table_all_80_cleanNames.csv'
+physeq_pred = build_physeq_object('otus_predFromDomain_novelSamples.tsv','data/metadata_novel_samples_only3envFeatures.csv',file_tax)
 
 # To select samples to represent in radar graph
+physeq_pred_sub = prune_samples(sample_names(physeq_pred) %in% c('new00','new01','new02'), physeq_pred)
+suffix0='_new00-01-02_age01'
+
 physeq_pred_sub = prune_samples(sample_names(physeq_pred) %in% c('new03','new04','new05'), physeq_pred)
+suffix0='_new03-04-05_age10'
 
-tax_rank="Class"
-suffix=paste('_new03-04-05_',tax_rank,sep='')
-plot_bar(physeq_pred_sub, fill=tax_rank)
+plot_radarchart_several_taxaLevels(physeq_pred_sub,suffix0)
 
-physeq_rank <- tax_glom(physeq_pred_sub, taxrank = tax_rank)
 
-# Translate taxa ID to taxa understandable name
-dic_taxa_names=tax_table(physeq_rank)[,tax_rank]
-for(i in seq(1,length(taxa_names(physeq_rank)))){
-  id=taxa_names(physeq_rank)[i]
-  taxa=unlist(strsplit(dic_taxa_names[id],'__'))[2]
-  taxa_names(physeq_rank)[i]=taxa
-}
-
-df=as.data.frame(t(otu_table(physeq_rank)))
-df=df[, order(names(df))]
-write.table(df , paste('otus_predFromDomain_novelSamples_withTaxaNames',suffix,'.tsv',sep=''), sep="\t", row.names = TRUE, col.names = NA)
-
-# Plot Radar Chart
-# To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
-min=0
-max=round(max(df),2)
-data <- rbind(rep(min,length(df)) , rep(max,length(df)) , df)
-
-colors_v=c(rgb(0.8,0.2,0.5,0.9), rgb(0.2,0.5,0.5,0.9), rgb(0.7,0.5,0.1,0.9))
-pdf(paste('radarChart_otus_predFromDomain_novelSamples',suffix,'.pdf',sep=''))
-par(xpd=NA)         # Allow plotting outside the plot region
-radarchart(data,axistype=1,
-           #custom polygon
-           pcol=colors_v,
-           plwd=3, plty=3, pty=19,
-           #custom the grid
-           cglcol="grey88", cglty=1, axislabcol="black",
-           # Reverse axis labeling
-           caxislabels=seq(max,0,-0.05), cglwd=0.8,
-           # custom color labels: radarchart2
-           # TODO: according to higher taxonomic group
-           #vlabcol=c(rep('red',15),rep('blue',15),rep('green',15),rep('purple',15)),
-           title='Relative abundances in different environmental conditions'
-           )
-#legend(x=-1.5, y=1.35, legend = rownames(data[-c(1,2),]), bty = "n", pch=20 , col=colors_v, cex=1.2, pt.cex=3)
-legend(x=-1, y=1.45, legend = c('actual','hot and dry','cold and rain'), bty = "n", horiz=TRUE, pch=20 , col=colors_v, cex=1.2, pt.cex=3)
-dev.off()
+# Alternative: To rotate labels: ggradar: ggplot extension for radar graph: https://rpubs.com/updragon/ggradar
