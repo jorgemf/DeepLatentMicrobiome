@@ -255,7 +255,7 @@ plot_radarchart_several_taxaLevels <- function(physeq_pred_sub,suffix0){
       taxa_names(physeq_rank)[i]=taxa
     }
     
-    # # Define color scale at Phylum level
+    ### Define color scale at Phylum level
     # colorsPhylum = hue_pal(c=80,l=70)(16)
     # taxaPhylum = c(sort(unique(tax_table(physeq_rank)[,"Phylum"])))
     # # HEREEEEEEEEEEEEE
@@ -267,12 +267,11 @@ plot_radarchart_several_taxaLevels <- function(physeq_pred_sub,suffix0){
     # pal1 <- c(tax_table(physeq_rank)[,"Phylum"])
     # vlabcol_values=c()
     # vlabcol_values=c(vlabcol_values,unname(col_universe[pal1]))
-
     #########
     
     df=as.data.frame(t(otu_table(physeq_rank)))
     df=df[, order(names(df))]
-    write.table(df , paste('otus_predFromDomain_novelSamples_withTaxaNames',suffix,'.tsv',sep=''), sep="\t", row.names = TRUE, col.names = NA)
+    write.table(df , paste('otus_predFromDomain_novelSamples_withTaxaNames_',suffix,'.tsv',sep=''), sep="\t", row.names = TRUE, col.names = NA)
     
     # Plot Radar Chart
     # To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
@@ -285,7 +284,7 @@ plot_radarchart_several_taxaLevels <- function(physeq_pred_sub,suffix0){
     data <- rbind(rep(min,length(df)) , rep(max_axis,length(df)) , df)
 
     colors_v=c(rgb(0.8,0.2,0.5,0.9), rgb(0.2,0.5,0.5,0.9), rgb(0.7,0.5,0.1,0.9))
-    pdf(paste('radarChart_otus_predFromDomain_novelSamples',suffix,'.pdf',sep=''))
+    pdf(paste('radarChart_otus_predFromDomain_novelSamples_',suffix,'.pdf',sep=''))
     par(xpd=NA)         # Allow plotting outside the plot region
     #par(family='Times',font=3,font.main=2,font.axis=1)
     radarchart2(data,
@@ -302,15 +301,16 @@ plot_radarchart_several_taxaLevels <- function(physeq_pred_sub,suffix0){
                # custom color labels: radarchart2
                # TODO: according to higher taxonomic group
                #vlabcol=c(rep('red',15),rep('blue',15),rep('green',15),rep('purple',15)),
-               title='Relative abundances in different environmental conditions'
+               title=paste('Relative abundances in different conditions.',suffix0)
     )
     legend(x=-1, y=1.48, legend = c('actual','hot and dry','cold and wet'), bty = "n", horiz=TRUE, pch=20 , col=colors_v, cex=1.2, pt.cex=3)
     dev.off()
-    embed_fonts(paste('radarChart_otus_predFromDomain_novelSamples',suffix,'.pdf',sep=''))
+    embed_fonts(paste('radarChart_otus_predFromDomain_novelSamples_',suffix,'.pdf',sep=''))
   } # end-for
 } # end-function
 ###
-
+# Alternative: To rotate labels: ggradar: ggplot extension for radar graph: https://rpubs.com/updragon/ggradar
+###
 
 
 
@@ -318,14 +318,28 @@ plot_radarchart_several_taxaLevels <- function(physeq_pred_sub,suffix0){
 file_tax = 'data/tax_table_all_80_cleanNames.csv'
 physeq_pred = build_physeq_object('otus_predFromDomain_novelSamples.tsv','data/metadata_novel_samples_only3envFeatures.csv',file_tax)
 
-# To select samples to represent in radar graph
-physeq_pred_sub = prune_samples(sample_names(physeq_pred) %in% c('new00','new01','new02'), physeq_pred)
-suffix0='_new00-01-02_age01'
+# # To select samples to represent in radar graph
+# physeq_pred_sub = prune_samples(sample_names(physeq_pred) %in% c('new00','new01','new02'), physeq_pred)
+# suffix0='_new00-01-02_age01'
+# 
+# physeq_pred_sub = prune_samples(sample_names(physeq_pred) %in% c('new03','new04','new05'), physeq_pred)
 
-physeq_pred_sub = prune_samples(sample_names(physeq_pred) %in% c('new03','new04','new05'), physeq_pred)
-suffix0='_new03-04-05_age10'
+# To generate predictions for different ages
+for(age in c(seq(1,15),20)){
+  # To select samples to represent in radar graph by age
+  print(age)
+  physeq_pred_sub = prune_samples(get_variable(physeq_pred,'age') == age, physeq_pred)
+  suffix0=paste('Age',age,sep='')
+  
+  plot_radarchart_several_taxaLevels(physeq_pred_sub,suffix0)
+}
 
-plot_radarchart_several_taxaLevels(physeq_pred_sub,suffix0)
+
+system('pdfjam --nup 4x4 --papersize {300mm,300mm} --pdftitle \'All ages\' --outfile radarChart_otus_predFromDomain_novelSamples_AgeAll_Class.pdf -- radarChart_otus_predFromDomain_novelSamples_Age1_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age2_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age3_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age4_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age5_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age6_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age7_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age8_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age9_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age10_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age11_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age12_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age13_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age14_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age15_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age20_Class.pdf')
 
 
-# Alternative: To rotate labels: ggradar: ggplot extension for radar graph: https://rpubs.com/updragon/ggradar
+system('pdfjam --nup 4x4 --papersize {300mm,300mm} --pdftitle \'All ages\' --outfile radarChart_otus_predFromDomain_novelSamples_AgeAll_Phylum.pdf -- radarChart_otus_predFromDomain_novelSamples_Age1_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age2_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age3_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age4_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age5_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age6_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age7_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age8_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age9_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age10_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age11_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age12_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age13_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age14_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age15_Phylum.pdf - radarChart_otus_predFromDomain_novelSamples_Age20_Phylum.pdf')
+
+system('pdfjam --nup 3x1 --papersize {225mm,75mm} --pdftitle \'Age evolution\' --outfile radarChart_otus_predFromDomain_novelSamples_AgeEvol_Class.pdf -- radarChart_otus_predFromDomain_novelSamples_Age4_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age7_Class.pdf - radarChart_otus_predFromDomain_novelSamples_Age20_Class.pdf')
+
+
