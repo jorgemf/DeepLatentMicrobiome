@@ -273,13 +273,16 @@ def perform_experiment_2(cv_folds, epochs, batch_size, learning_rate, optimizer,
         display(Markdown(md_text))
 
     def create_model(print_data=False):
+        bioma_shape=data_microbioma_train.shape[1]
         if data_domain_train is not None:
             domain_shape=data_domain_train.shape[1]
         else:
             domain_shape=None
-        models = autoencoder(bioma_shape=717,
+        models = autoencoder(bioma_shape=bioma_shape,
+                             #bioma_shape=717,
                              domain_shape=domain_shape,
-                             output_shape=717,
+                             output_shape=bioma_shape,
+                             #output_shape=717,
                              latent_space=latent_space,
                              bioma_layers=layers,
                              domain_layers=domain_layers,
