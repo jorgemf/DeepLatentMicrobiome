@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow.keras import metrics
 import scipy
 
-
 class MeanSquaredErrorWrapper(metrics.MeanSquaredError):
 
     def __init__(self, y_true_transformer, y_pred_transformer):
@@ -87,6 +86,7 @@ class PearsonCorrelation(metrics.Mean):
         l2_norm_y_pred = dev_y_pred * dev_y_pred
         l2_norm_y_pred = tf.sqrt(tf.reduce_sum(l2_norm_y_pred, axis=-1))
         r = tf.reduce_sum(dev_y_true * dev_y_pred, axis=-1) / (l2_norm_y_true * l2_norm_y_pred)
+        r = tf.where(tf.math.is_nan(r), tf.zeros_like(r), r) # Avoid nan
         return super(PearsonCorrelation, self).update_state(
             r, sample_weight=sample_weight)
 
