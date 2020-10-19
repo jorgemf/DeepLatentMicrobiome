@@ -1,5 +1,6 @@
+`1_MAIN_DeepLatentMicrobiome` is the main notebook that summaries the capabilities of the Deep Latent Microbiome system.
 
-The notebooks could be divided into:
+The remaining notebooks could be divided into:
 
 * autoencoder_results: summary of results of experiments for selection of hyperparameters
 
