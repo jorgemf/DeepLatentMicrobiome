@@ -28,7 +28,7 @@ We provide a user-friendly interface, that could be run in the web browser, with
 There, the user can change the environmental features values (temperature, precipitation and plant age) and to predict their corresponding Maize rhizosphere microbiome in novel ecoystems.
 
 #### Pre-run notebooks with results
-If you do not want to run by yourself, all the available notebooks have been pre-run and saved as .html files at `Notebooks/OutputNotebooks/`. So, you can easily open them in a web browser and take a look to the different results. 
+If you do not want to run by yourself, all the available notebooks have been pre-run and saved as .html files at [`Notebooks/OutputNotebooks/`](Notebooks/OutputNotebooks/). So, you can easily open them in a web browser and take a look to the different results. 
 
 ***
 
@@ -47,7 +47,7 @@ source ./envDeepLatentMicrobiome/bin/activate
 Deep Latent Microbiome software run in python, mainly in Jupyter notebooks. Instructions to install Jupyter software are at [Jupyter install site](https://jupyter.org/install). 
 
 #### Pre-required libraries
-It is required to install (with ```pip install```), at least, the following python packages:
+It is required to install (with `pip install`), at least, the following python packages:
 
 * jupyther
 * tensorflow
@@ -60,8 +60,14 @@ It is required to install (with ```pip install```), at least, the following pyth
 * graphviz
 * h5py
 
+You can also use `pip install -i requirements.txt` to install all the packages.
+
+#### Pipenv
+
+Alternative to virtual environments you can use the `Pipfile` include in the project with the command `pipenv install`.
+
 #### R
-R is not required to run the Deep Latent Microbiome software. R scripts (in ```Src/``` folder) are used to summarize results and make reproducbile the graphs of the manuscript.
+R is not required to run the Deep Latent Microbiome software. R scripts (in [`Src/`](Src/) folder) are used to summarize results and make reproductible the graphs of the manuscript.
 
 
 ***
@@ -75,14 +81,14 @@ You should see the notebook open in your browser. Then, you click in a notebook 
 
 ***
 ### Main notebook
-You can check the main notebook **`Notebooks/MAIN_DeepLatentMicrobiome.ipynb`** for checking a summary of the main capabilities of the software. Someones are described below.
+You can check the main notebook [**`Notebooks/MAIN_DeepLatentMicrobiome.ipynb`**](Notebooks/MAIN_DeepLatentMicrobiome.ipynb) for checking a summary of the main capabilities of the software. Someones are described below.
 
 ***
 ### Train one autoencoder architecture
 
-The best option is to take the notebook `reference_model_predictions_and_analysis.ipynb` as template and to edit its cells.
+The best option is to take the notebook [`reference_model_predictions_and_analysis.ipynb`](Notebooks/reference_model_predictions_and_analysis.ipynb) as template and to edit its cells.
 
-To run a particular experiment (one combination from the 405), `perform_experiment_2()` should be called with the corresponding configuration parameters, in a similar way as it is shown in `Notebooks/OutputNotebooks/reference_model_predictions_and_analysis.html`
+To run a particular experiment (one combination from the 405), `perform_experiment_2()` should be called with the corresponding configuration parameters, in a similar way as it is shown in [`Notebooks/OutputNotebooks/reference_model_predictions_and_analysis.html`](Notebooks/OutputNotebooks/reference_model_predictions_and_analysis.html)
 
 ```bash
 experiment_metrics, models, results = perform_experiment_2(cv_folds = 0, 
@@ -111,7 +117,7 @@ The input datasets are defined in:
 
 If only the first is defined (i.e. `data_domain_train=None`), a OTU latent space is built. While if both variables are defined (the same as in the example above), a combined latent space is built.
 
-The 405 combinations of hyperparameters tested in this study can be checked in a table `Results/results_experiments_hyperparameters.csv`, and programmatically in `Src/experiments.py`. 
+The 405 combinations of hyperparameters tested in this study can be checked in a table [`Results/results_experiments_hyperparameters.csv`](Results/results_experiments_hyperparameters.csv), and programmatically in [`Src/experiments.py`](Src/experiments.py). 
 The range of the values of some hyperparameters (the easier to change) were as follows:
 
 * `batch_size`: 64, 128
@@ -122,7 +128,7 @@ The range of the values of some hyperparameters (the easier to change) were as f
 
 #### Running multiple autoencoder configurations
 The evaluation of multiple configuration of autoencoder hyperparameters consist mainly on repeated calls to the function `perform_experiment_2`, explained above.
-In `Src/experiments.py` you could find a template for the loops over the different values of the hyperparameters that was tested on the Maize rhizosphere case of study.
+In [`Src/experiments.py`](Src/experiments.py) you could find a template for the loops over the different values of the hyperparameters that was tested on the Maize rhizosphere case of study.
 
 ***
 ### To predict microbiome for new environmental features
@@ -160,14 +166,14 @@ This software was only tested on the Maize Rhizosphere case of study, with data 
 
 If you would like to apply to a different datasets, you should mainly code your own `Src/data.py` library to read and pre-process your OTU/ASV table and their associated metadata, defining the way to split for train-test datasets.
 
-Then, you could take the notebook `Notebooks/reference_model_predictions_and_analysis.html` as template, and modify it according to your newly created functions, calling the read function at the beginning of the notebooks. Similar to the call in the template, for example:
+Then, you could take the notebook [`Notebooks/reference_model_predictions_and_analysis.ipynb`](Notebooks/reference_model_predictions_and_analysis.ipynb) as template, and modify it according to your newly created functions, calling the read function at the beginning of the notebooks. Similar to the call in the template, for example:
 ```bash
 df_microbioma_train, df_microbioma_test, _, _, \
 df_domain_train, df_domain_test, _, _, otu_columns, domain_columns = \
       read_df_with_transfer_learning_subset_fewerDomainFeatures(['age','Temperature','Precipitation3Days'])
 ```
 
-You could customize your functions depending on the amount and type of your metadata and enviromental features.
+You could customize your functions depending on the amount and type of your metadata and environmental features.
 
 
 ***
