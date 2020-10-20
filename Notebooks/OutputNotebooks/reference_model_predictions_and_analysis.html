@@ -13152,7 +13152,10 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_microbioma_train</span><span class="p">,</span> <span class="n">df_microbioma_test</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> \
 <span class="n">df_domain_train</span><span class="p">,</span> <span class="n">df_domain_test</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">domain_columns</span> <span class="o">=</span> \
-    <span class="n">read_df_with_transfer_learning_subset_fewerDomainFeatures</span><span class="p">([</span><span class="s1">&#39;age&#39;</span><span class="p">,</span><span class="s1">&#39;Temperature&#39;</span><span class="p">,</span><span class="s1">&#39;Precipitation3Days&#39;</span><span class="p">])</span>
+    <span class="n">read_df_with_transfer_learning_subset_fewerDomainFeatures</span><span class="p">(</span> \
+        <span class="n">metadata_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span><span class="s1">&#39;Temperature&#39;</span><span class="p">,</span><span class="s1">&#39;Precipitation3Days&#39;</span><span class="p">],</span> \
+        <span class="n">otu_filename</span><span class="o">=</span><span class="s1">&#39;../Datasets/otu_table_all_80.csv&#39;</span><span class="p">,</span> \
+        <span class="n">metadata_filename</span><span class="o">=</span><span class="s1">&#39;../Datasets/metadata_table_all_80.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13742,7 +13745,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_tl_noEnsemble</span><span class="p">(</span><span class="n">model_latent</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_tl_noEnsemble</span><span class="p">(</span><span class="n">model_latent</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
 </pre></div>
 
     </div>

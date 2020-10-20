@@ -13093,7 +13093,7 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../Src/&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../Src/&#39;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">data</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">transfer_learning</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">test_functions</span> <span class="kn">import</span> <span class="o">*</span>
@@ -13137,7 +13137,10 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_microbioma_train</span><span class="p">,</span> <span class="n">df_microbioma_test</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> \
 <span class="n">df_domain_train</span><span class="p">,</span> <span class="n">df_domain_test</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">domain_columns</span> <span class="o">=</span> \
-    <span class="n">read_df_with_transfer_learning_subset_fewerDomainFeatures</span><span class="p">([</span><span class="s1">&#39;Maize_Line&#39;</span><span class="p">])</span>
+    <span class="n">read_df_with_transfer_learning_subset_fewerDomainFeatures</span><span class="p">(</span> \
+        <span class="n">metadata_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Maize_Line&#39;</span><span class="p">],</span> \
+        <span class="n">otu_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/otu_table_all_80.csv&#39;</span><span class="p">,</span> \
+        <span class="n">metadata_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/metadata_table_all_80.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13544,7 +13547,7 @@ Maize_Line_Tropical: 0.39946380697050937
 <div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model</span><span class="p">(</span><span class="n">modelsLR</span><span class="p">,</span> <span class="n">CenterLogRatio</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model</span><span class="p">(</span><span class="n">modelsLR</span><span class="p">,</span> <span class="n">CenterLogRatio</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
 <span class="c1">#save_predictions(predictions, &#39;experiment_testSet_linear_regresion_maizeLine.txt&#39;)</span>
 </pre></div>
 
@@ -13896,7 +13899,7 @@ Maize_Line_Tropical: 0.39946380697050937
 <div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model</span><span class="p">(</span><span class="n">modelsMLP</span><span class="p">,</span> <span class="n">CenterLogRatio</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model</span><span class="p">(</span><span class="n">modelsMLP</span><span class="p">,</span> <span class="n">CenterLogRatio</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
 <span class="c1">#save_predictions(predictions, &#39;experiment_testSet_MLP_maizeLine.txt&#39;)</span>
 </pre></div>
 
@@ -13960,19 +13963,6 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">train_2</span> <span class="kn">import</span> <span class="o">*</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13982,12 +13972,15 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_microbioma_train</span><span class="p">,</span> <span class="n">df_microbioma_test</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> \
 <span class="n">df_domain_train</span><span class="p">,</span> <span class="n">df_domain_test</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">domain_columns</span> <span class="o">=</span> \
-    <span class="n">read_df_with_transfer_learning_subset_fewerDomainFeatures</span><span class="p">([</span><span class="s1">&#39;Maize_Line&#39;</span><span class="p">])</span>
+    <span class="n">read_df_with_transfer_learning_subset_fewerDomainFeatures</span><span class="p">(</span> \
+        <span class="n">metadata_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Maize_Line&#39;</span><span class="p">],</span> \
+        <span class="n">otu_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/otu_table_all_80.csv&#39;</span><span class="p">,</span> \
+        <span class="n">metadata_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/metadata_table_all_80.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13997,7 +13990,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_microbioma_train</span> <span class="o">=</span> <span class="n">df_microbioma_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
@@ -14013,7 +14006,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_domain_train</span><span class="o">.</span><span class="n">shape</span>
@@ -14029,7 +14022,7 @@ Maize_Line_Tropical: 0.39946380697050937
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[19]:</div>
+    <div class="prompt output_prompt">Out[18]:</div>
 
 
 
@@ -14053,7 +14046,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Train the selected model (the best one from those with the smallest latent space (10)): no.351</span>
@@ -14797,10 +14790,10 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_cv_predictions</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_cv_predictions</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
 <span class="c1">#save_predictions(predictions, &#39;experiment_testSet_AE_combinedLatent_5CV_maizeLine.txt&#39;)</span>
 </pre></div>
 
@@ -14864,19 +14857,6 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">train_2</span> <span class="kn">import</span> <span class="o">*</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -14886,12 +14866,15 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_microbioma_train</span><span class="p">,</span> <span class="n">df_microbioma_test</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> \
 <span class="n">df_domain_train</span><span class="p">,</span> <span class="n">df_domain_test</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">domain_columns</span> <span class="o">=</span> \
-    <span class="n">read_df_with_transfer_learning_subset_fewerDomainFeatures</span><span class="p">([</span><span class="s1">&#39;Maize_Line&#39;</span><span class="p">])</span>
+    <span class="n">read_df_with_transfer_learning_subset_fewerDomainFeatures</span><span class="p">(</span> \
+        <span class="n">metadata_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Maize_Line&#39;</span><span class="p">],</span> \
+        <span class="n">otu_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/otu_table_all_80.csv&#39;</span><span class="p">,</span> \
+        <span class="n">metadata_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/metadata_table_all_80.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14901,7 +14884,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_microbioma_train</span> <span class="o">=</span> <span class="n">df_microbioma_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
@@ -14917,7 +14900,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">data_microbioma_train</span><span class="o">.</span><span class="n">shape</span>
@@ -14933,7 +14916,7 @@ Maize_Line_Tropical: 0.39946380697050937
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[25]:</div>
+    <div class="prompt output_prompt">Out[23]:</div>
 
 
 
@@ -14950,7 +14933,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Train the selected model (the best one from those with the smallest latent space (10)): no.351</span>
@@ -15361,7 +15344,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="p">,</span> <span class="n">encoder</span><span class="p">,</span> <span class="n">_</span> <span class="p">,</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -15374,7 +15357,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_domain_train</span><span class="o">.</span><span class="n">shape</span>
@@ -15390,7 +15373,7 @@ Maize_Line_Tropical: 0.39946380697050937
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[28]:</div>
+    <div class="prompt output_prompt">Out[26]:</div>
 
 
 
@@ -15414,7 +15397,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">latent_train</span> <span class="o">=</span> <span class="n">encoder</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data_microbioma_train</span><span class="p">)</span>
@@ -15435,7 +15418,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">model_fn_latent</span><span class="p">():</span>
@@ -15458,7 +15441,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">result_latent</span><span class="p">,</span> <span class="n">model_latent</span> <span class="o">=</span> <span class="n">train_tl_noEnsemble</span><span class="p">(</span><span class="n">model_fn_latent</span><span class="p">,</span>
@@ -15478,7 +15461,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">print_results_noEnsemble</span><span class="p">(</span><span class="n">result_latent</span><span class="p">)</span>
@@ -15545,7 +15528,7 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Test only Dense(domain-&gt;latent)</span>
@@ -15603,10 +15586,10 @@ Maize_Line_Tropical: 0.39946380697050937
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_tl_noEnsemble</span><span class="p">(</span><span class="n">model_latent</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_tl_noEnsemble</span><span class="p">(</span><span class="n">model_latent</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">data_microbioma_test</span><span class="p">,</span> <span class="n">data_domain_test</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -15658,19 +15641,6 @@ Maize_Line_Tropical: 0.39946380697050937
 
 </div>
 
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
 </div>
 </div>
 

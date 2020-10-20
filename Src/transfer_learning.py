@@ -9,7 +9,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Linear Regression and MLP (Dense)
-def test_model(models, input_transform, output_transform, bioma_transfer_test, domain_transfer_test):
+def test_model(models, input_transform, output_transform, otu_columns, bioma_transfer_test, domain_transfer_test):
     data_bioma_test_transformed = Percentage()(bioma_transfer_test)
     if input_transform is not None:
         input_transform = input_transform()
@@ -68,7 +68,7 @@ def test_model(models, input_transform, output_transform, bioma_transfer_test, d
 
 
 
-def test_model_cv_predictions(models_cv, input_transform, output_transform, data_microbioma, data_domain):
+def test_model_cv_predictions(models_cv, input_transform, output_transform, otu_columns, data_microbioma, data_domain):
     data_bioma_test_transformed = Percentage()(data_microbioma)
     if input_transform is not None:
         input_transform = input_transform()
@@ -196,7 +196,7 @@ def test_model_tl_latent(model, latent_transfer_test, domain_transfer_test):
     return final_predictions
 
 
-def test_model_tl_noEnsemble(model, decoder, input_transform, output_transform, bioma_transfer_test, domain_transfer_test):
+def test_model_tl_noEnsemble(model, decoder, input_transform, output_transform, otu_columns, bioma_transfer_test, domain_transfer_test):
     data_bioma_test_transformed = Percentage()(bioma_transfer_test)
     if input_transform is not None:
         input_transform = input_transform()
@@ -210,7 +210,7 @@ def test_model_tl_noEnsemble(model, decoder, input_transform, output_transform, 
     final_decoded = decoder.predict(final_predictions)
     
     predictions = tf.nn.softmax(final_decoded)
-    
+
     for m in metrics:
         if m.name not in metrics_results:
             metrics_results[m.name] = []

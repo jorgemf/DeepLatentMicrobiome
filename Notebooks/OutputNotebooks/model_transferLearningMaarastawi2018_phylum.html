@@ -13093,7 +13093,7 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../Src/&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../Src/&#39;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">data</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">train_2</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">transfer_learning</span> <span class="kn">import</span> <span class="o">*</span>
@@ -13142,11 +13142,11 @@ div#notebook {
 <span class="n">otu_columns</span><span class="p">,</span> <span class="n">domain_columns</span> <span class="o">=</span> \
     <span class="n">read_df_with_transfer_learning_2otufiles_differentDomainFeatures</span><span class="p">(</span>
               <span class="n">metadata_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span><span class="s1">&#39;Temperature&#39;</span><span class="p">,</span><span class="s1">&#39;Precipitation3Days&#39;</span><span class="p">],</span>
-              <span class="n">otu_filename</span><span class="o">=</span><span class="s1">&#39;../Datasets/Aggregated/otu_table_Phylum.csv&#39;</span><span class="p">,</span>
-              <span class="n">metadata_filename</span><span class="o">=</span><span class="s1">&#39;../Datasets/Aggregated/metadata_table_all_80.csv&#39;</span><span class="p">,</span>
+              <span class="n">otu_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/Aggregated/otu_table_Phylum.csv&#39;</span><span class="p">,</span>
+              <span class="n">metadata_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/Aggregated/metadata_table_all_80.csv&#39;</span><span class="p">,</span>
               <span class="n">metadata_names_transfer</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pH&#39;</span><span class="p">,</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;C.N&#39;</span><span class="p">],</span>
-              <span class="n">otu_transfer_filename</span><span class="o">=</span><span class="s1">&#39;../Datasets/Maarastawi2018/otu_table_Phylum_Maarastawi2018.csv&#39;</span><span class="p">,</span>
-              <span class="n">metadata_transfer_filename</span><span class="o">=</span><span class="s1">&#39;../Datasets/Maarastawi2018/metadata_table_Maarastawi2018.csv&#39;</span><span class="p">)</span>
+              <span class="n">otu_transfer_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/Maarastawi2018/otu_table_Phylum_Maarastawi2018.csv&#39;</span><span class="p">,</span>
+              <span class="n">metadata_transfer_filename</span><span class="o">=</span><span class="s1">&#39;../../Datasets/Maarastawi2018/metadata_table_Maarastawi2018.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13588,7 +13588,7 @@ C:0.9551351351351353
 <div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model</span><span class="p">(</span><span class="n">modelsLR</span><span class="p">,</span> <span class="n">CenterLogRatio</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data_microbioma_transfer_learning_test</span><span class="p">,</span> <span class="n">data_domain_transfer_learning_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model</span><span class="p">(</span><span class="n">modelsLR</span><span class="p">,</span> <span class="n">CenterLogRatio</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">data_microbioma_transfer_learning_test</span><span class="p">,</span> <span class="n">data_domain_transfer_learning_test</span><span class="p">)</span>
 <span class="c1">#save_predictions(predictions, &#39;experiment_transfer_learning_WaltersSubset_linear_regresion.txt&#39;)</span>
 </pre></div>
 
@@ -13940,7 +13940,7 @@ C:0.9551351351351353
 <div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model</span><span class="p">(</span><span class="n">modelsMLP</span><span class="p">,</span> <span class="n">CenterLogRatio</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data_microbioma_transfer_learning_test</span><span class="p">,</span> <span class="n">data_domain_transfer_learning_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model</span><span class="p">(</span><span class="n">modelsMLP</span><span class="p">,</span> <span class="n">CenterLogRatio</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">data_microbioma_transfer_learning_test</span><span class="p">,</span> <span class="n">data_domain_transfer_learning_test</span><span class="p">)</span>
 <span class="c1">#save_predictions(predictions, &#39;experiment_transfer_learning_WaltersSubset_MLP.txt&#39;)</span>
 </pre></div>
 
@@ -14976,7 +14976,7 @@ C:0.9551351351351353
 <div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_tl_noEnsemble</span><span class="p">(</span><span class="n">model_tl</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">data_microbioma_transfer_learning_test</span><span class="p">,</span> <span class="n">data_domain_transfer_learning_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_tl_noEnsemble</span><span class="p">(</span><span class="n">model_tl</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">data_microbioma_transfer_learning_test</span><span class="p">,</span> <span class="n">data_domain_transfer_learning_test</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -15577,7 +15577,7 @@ C:0.9551351351351353
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;tensorflow.python.keras.callbacks.History object at 0x7f2d1a106208&gt;
+<pre>&lt;tensorflow.python.keras.callbacks.History object at 0x7f060643dba8&gt;
 </pre>
 </div>
 </div>
@@ -15713,10 +15713,10 @@ C:0.9551351351351353
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_tl_noEnsemble</span><span class="p">(</span><span class="n">model_tl</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">data_microbioma_transfer_learning_test</span><span class="p">,</span> <span class="n">data_domain_transfer_learning_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">test_model_tl_noEnsemble</span><span class="p">(</span><span class="n">model_tl</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">Percentage</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Softmax</span><span class="p">,</span> <span class="n">otu_columns</span><span class="p">,</span> <span class="n">data_microbioma_transfer_learning_test</span><span class="p">,</span> <span class="n">data_domain_transfer_learning_test</span><span class="p">)</span>
 </pre></div>
 
     </div>

@@ -18,8 +18,8 @@ from IPython.display import Markdown, display
 from tqdm.keras import TqdmCallback
 from data import read_data
 
-data_microbioma_train, data_microbioma_test, data_domain_train, data_domain_test, \
-otu_columns, domain_columns = read_data()
+#data_microbioma_train, data_microbioma_test, data_domain_train, data_domain_test, \
+#otu_columns, domain_columns = read_data()
 
 
 def compile_train(model, encoder_bioma=None, encoder_domain=None,
