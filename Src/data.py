@@ -7,8 +7,8 @@ from sklearn.model_selection import train_test_split
 
 
 def read_data(random_state=42,
-              otu_filename='../Datasets/otu_table_all_80.csv',
-              metadata_filename='../Datasets/metadata_table_all_80.csv'):
+              otu_filename='../../Datasets/otu_table_all_80.csv',
+              metadata_filename='../../Datasets/metadata_table_all_80.csv'):
     otu = pd.read_csv(otu_filename, index_col=0, header=None, sep='\t').T
     otu = otu.set_index('otuids')
     otu = otu.astype('int32')
@@ -28,6 +28,42 @@ def read_data(random_state=42,
     data_microbioma_train, data_microbioma_test, data_domain_train, data_domain_test = \
         train_test_split(data_microbioma, data_domain, test_size=0.1, random_state=random_state)
     return data_microbioma_train, data_microbioma_test, data_domain_train, data_domain_test, otu.columns, domain.columns
+
+
+
+def read_df_with_transfer_learning_subset_fewerDomainFeatures(
+              metadata_names=['age','Temperature','Precipitation3Days'],
+              random_state=42,
+              otu_filename='../Datasets/otu_table_all_80.csv',
+              metadata_filename='../Datasets/metadata_table_all_80.csv'):
+    otu = pd.read_csv(otu_filename, index_col=0, header=None, sep='\t').T
+    otu = otu.set_index('otuids')
+    otu = otu.astype('int32')
+    metadata = pd.read_csv(metadata_filename, sep='\t')
+    metadata = metadata.set_index('X.SampleID')
+    domain = metadata[metadata_names]
+    if 'INBREDS' in metadata_names:
+        domain = pd.concat([domain, pd.get_dummies(domain['INBREDS'], prefix='INBREDS')], axis=1)
+        domain = domain.drop(['INBREDS'], axis=1)
+    elif 'Maize_Line' in metadata_names:
+        domain = pd.concat([domain, pd.get_dummies(domain['Maize_Line'], prefix='Maize_Line')], axis=1)
+        domain = domain.drop(['Maize_Line'], axis=1) 
+    df = pd.concat([otu, domain], axis=1, sort=True, join='outer')
+    #data_microbioma = df[otu.columns].to_numpy(dtype=np.float32)
+    #data_domain = df[domain.columns].to_numpy(dtype=np.float32)
+    df_microbioma = df[otu.columns]
+    df_domain = df[domain.columns]    
+    df_microbioma_train, df_microbioma_no_train, df_domain_train, df_domain_no_train = \
+        train_test_split(df_microbioma, df_domain, test_size=0.1, random_state=random_state)
+    # Transfer learning subset
+    df_microbioma_test, df_microbioma_transfer_learning, df_domain_test, df_domain_transfer_learning = \
+        train_test_split(df_microbioma_no_train, df_domain_no_train, test_size=100, random_state=random_state)
+    df_microbioma_transfer_learning_train, df_microbioma_transfer_learning_test, df_domain_transfer_learning_train, df_domain_transfer_learning_test = \
+        train_test_split(df_microbioma_transfer_learning, df_domain_transfer_learning, test_size=0.3, random_state=random_state)
+    
+    return df_microbioma_train, df_microbioma_test, df_microbioma_transfer_learning_train, df_microbioma_transfer_learning_test, df_domain_train, df_domain_test, df_domain_transfer_learning_train, df_domain_transfer_learning_test, otu.columns, domain.columns
+
+
 
 def read_df_with_transfer_learning_subset(random_state=42,
               otu_filename='../Datasets/otu_table_all_80.csv',
@@ -92,40 +128,6 @@ def read_df_with_transfer_learning_subset_stratified_by_maize_line(random_state=
         train_test_split(df_microbioma_transfer_learning, df_domain_transfer_learning, test_size=0.3, random_state=random_state, stratify = col_stratify)
     
     return df_microbioma_train, df_microbioma_test, df_microbioma_transfer_learning_train, df_microbioma_transfer_learning_test, df_domain_train, df_domain_test, df_domain_transfer_learning_train, df_domain_transfer_learning_test, otu.columns, domain.columns
-
-
-
-def read_df_with_transfer_learning_subset_fewerDomainFeatures(
-              metadata_names=['age','Temperature','Precipitation3Days'],
-              random_state=42,
-              otu_filename='../Datasets/otu_table_all_80.csv',
-              metadata_filename='../Datasets/metadata_table_all_80.csv'):
-    otu = pd.read_csv(otu_filename, index_col=0, header=None, sep='\t').T
-    otu = otu.set_index('otuids')
-    otu = otu.astype('int32')
-    metadata = pd.read_csv(metadata_filename, sep='\t')
-    metadata = metadata.set_index('X.SampleID')
-    domain = metadata[metadata_names]
-    if 'INBREDS' in metadata_names:
-        domain = pd.concat([domain, pd.get_dummies(domain['INBREDS'], prefix='INBREDS')], axis=1)
-        domain = domain.drop(['INBREDS'], axis=1)
-    elif 'Maize_Line' in metadata_names:
-        domain = pd.concat([domain, pd.get_dummies(domain['Maize_Line'], prefix='Maize_Line')], axis=1)
-        domain = domain.drop(['Maize_Line'], axis=1) 
-    df = pd.concat([otu, domain], axis=1, sort=True, join='outer')
-    #data_microbioma = df[otu.columns].to_numpy(dtype=np.float32)
-    #data_domain = df[domain.columns].to_numpy(dtype=np.float32)
-    df_microbioma = df[otu.columns]
-    df_domain = df[domain.columns]    
-    df_microbioma_train, df_microbioma_no_train, df_domain_train, df_domain_no_train = \
-        train_test_split(df_microbioma, df_domain, test_size=0.1, random_state=random_state)
-    df_microbioma_test, df_microbioma_transfer_learning, df_domain_test, df_domain_transfer_learning = \
-        train_test_split(df_microbioma_no_train, df_domain_no_train, test_size=100, random_state=random_state)
-    df_microbioma_transfer_learning_train, df_microbioma_transfer_learning_test, df_domain_transfer_learning_train, df_domain_transfer_learning_test = \
-        train_test_split(df_microbioma_transfer_learning, df_domain_transfer_learning, test_size=0.3, random_state=random_state)
-    
-    return df_microbioma_train, df_microbioma_test, df_microbioma_transfer_learning_train, df_microbioma_transfer_learning_test, df_domain_train, df_domain_test, df_domain_transfer_learning_train, df_domain_transfer_learning_test, otu.columns, domain.columns
-
 
 
 def read_df_with_transfer_learning_2otufiles_fewerDomainFeatures(
