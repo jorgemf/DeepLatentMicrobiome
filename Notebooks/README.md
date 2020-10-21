@@ -1,13 +1,6 @@
-`1_MAIN_DeepLatentMicrobiome` is the main notebook that summaries the capabilities of the Deep Latent Microbiome system.
+* **`MAIN_DeepLatentMicrobiome`** is the main notebook that summaries the capabilities of the Deep Latent Microbiome system.
 
-The remaining notebooks could be divided into:
+* `reference_model_predictions_and_analysis` builds the selected reference model (experiment 351), runs the analysis about microbiome reconstruction and prediction in the test set, and makes prediction in novel ecosystems. It is the template notebook for further models to develop.
 
-* autoencoder_results: summary of results of experiments for selection of hyperparameters
+* `autoencoder_results` summaries the results of the experiments for selection of hyperparameters.
 
-* reference_model_predictions_and_analysis: build selected reference model (experiment 351), run analysis about microbiome reconstruction and prediction in test set, and prediction in novel ecosystems
-
-* model_reference_\*domainFeatures\*: relevant feature analysis
-
-* model_aggregated_\*: microbiome prediction at different taxonomic levels
-
-* model_transferLearning: transfer learning analysis

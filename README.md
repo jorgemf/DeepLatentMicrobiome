@@ -64,10 +64,10 @@ You can also use `pip install -i requirements.txt` to install all the packages.
 
 #### Pipenv
 
-Alternative to virtual environments you can use the `Pipfile` include in the project with the command `pipenv install`.
+Alternative to virtual environments you can use the `Pipfile` included in the project with the command `pipenv install`.
 
 #### R
-R is not required to run the Deep Latent Microbiome software. R scripts (in [`Src/`](Src/) folder) are used to summarize results and make reproductible the graphs of the manuscript.
+R is not required to run the Deep Latent Microbiome software. R scripts (in [`Src/`](Src/) folder) are used to summarize results and make reproducible the graphs of the manuscript.
 
 
 ***
@@ -127,7 +127,7 @@ The range of the values of some hyperparameters (the easier to change) were as f
 * `latent_space`: 10, 50, 100
 
 #### Running multiple autoencoder configurations
-The evaluation of multiple configuration of autoencoder hyperparameters consist mainly on repeated calls to the function `perform_experiment_2`, explained above.
+The evaluation of multiple configuration of autoencoder hyperparameters consist mainly on repeated calls to the function `perform_experiment()`, explained above.
 In [`Src/experiments.py`](Src/experiments.py) you could find a template for the loops over the different values of the hyperparameters that was tested on the Maize rhizosphere case of study.
 
 ***
@@ -137,7 +137,7 @@ You can run in the web browser the user-friendly interface https://tinyurl.com/D
 
 For a different model that you have previously trained (as above), to follow the next steps:
 
-* To write the environmental feature values (in this case, plant age, temperature and precipitation) in a .csv file, for example, `../Datasets/NovelEcosystems/metadata_novel_samples_only3envFeatures.csv`:
+* To write the environmental feature values (in this case, plant age, temperature and precipitation) in a .csv file, for example, [`Datasets/NovelEcosystems/metadata_novel_samples_only3envFeatures.csv`](Datasets/NovelEcosystems/metadata_novel_samples_only3envFeatures.csv):
 ```bash
 metadata = pd.read_csv('../Datasets/NovelEcosystems/metadata_novel_samples_only3envFeatures.csv', sep='\t')
 metadata = metadata.set_index('X.SampleID')
@@ -164,21 +164,22 @@ predictions = decoder.predict(predictions_latent)
 
 This software was only tested on the Maize Rhizosphere case of study, with data from [Walters et al., 2018](https://doi.org/10.1073/pnas.1800918115).
 
-If you would like to apply to a different datasets, you should mainly code your own `Src/data.py` library to read and pre-process your OTU/ASV table and their associated metadata, defining the way to split for train-test datasets.
+If you would like to apply to a different dataset, you should mainly code your own [`Src/data.py`](Src/data.py) library to read and pre-process your OTU/ASV table and their associated metadata, defining the way to split for train-test datasets.
 
 Then, you could take the notebook [`Notebooks/reference_model_predictions_and_analysis.ipynb`](Notebooks/reference_model_predictions_and_analysis.ipynb) as template, and modify it according to your newly created functions, calling the read function at the beginning of the notebooks. Similar to the call in the template, for example:
 ```bash
 df_microbioma_train, df_microbioma_test, _, _, \
 df_domain_train, df_domain_test, _, _, otu_columns, domain_columns = \
-      read_df_with_transfer_learning_subset_fewerDomainFeatures(['age','Temperature','Precipitation3Days'])
+    read_df_with_transfer_learning_subset_fewerDomainFeatures( \
+        metadata_names=['age','Temperature','Precipitation3Days'], \
+        otu_filename='../Datasets/otu_table_all_80.csv', \
+        metadata_filename='../Datasets/metadata_table_all_80.csv')
 ```
 
 You could customize your functions depending on the amount and type of your metadata and environmental features.
 
 
 ***
-Check the additional documented `Notebooks` for further uses of the software: to use an architecture with a OTU latent space, to aggregate OTU at different taxonomic levels, transfer learning, to train predictor based on a Linear Regression or Multiple Layer Perceptron to compare, etc.
+Check the additional documented [`Notebooks/Auxiliary/`](Notebooks/Auxiliary/) for further uses of the software: to use an architecture with a OTU latent space, to aggregate OTU at different taxonomic levels, transfer learning, to train predictor based on a Linear Regression or Multiple Layer Perceptron to compare, etc.
 
 *** 
-
-
