@@ -15,8 +15,7 @@ Deep Latent Microbiome has been applied to predict Maize rhizosphere microbiome 
 
 **Citation**: This repository contains software (mainly Jupyter notebooks), data and results files that reproduce the study described in:
 
-**Beatriz García-Jiménez, Jorge Muñoz, Sara Cabello, Joaquín Medina and Mark D. Wilkinson. Predicting microbiomes through a deep latent space (Under review)**
-Pre-print available on biorxiv [doi: 10.1101/2020.04.27.063974](https://biorxiv.org/cgi/content/short/2020.04.27.063974v1)
+**Beatriz García-Jiménez, Jorge Muñoz, Sara Cabello, Joaquín Medina and Mark D. Wilkinson. Predicting microbiomes through a deep latent space, Bioinformatics, November 2020, btaa971,  [doi:10.1093/bioinformatics/btaa971](https://doi.org/10.1093/bioinformatics/btaa971)**
 
 ***
 
